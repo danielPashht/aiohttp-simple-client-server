@@ -3,7 +3,7 @@ import asyncio
 from aiohttp import web
 
 
-tasks = {}
+tasks = {}  # In-memory storage
 task_counter = 0
 lock = asyncio.Lock()
 
@@ -60,7 +60,8 @@ async def delete_task(request):
 	if task_id not in tasks:
 		raise web.HTTPNotFound()
 
-	del tasks[task_id]
+	async with lock:
+		del tasks[task_id]
 
 	return web.json_response({'message': 'task deleted'})
 
